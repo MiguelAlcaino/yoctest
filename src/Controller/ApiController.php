@@ -52,4 +52,30 @@ class ApiController extends Controller
 
         return new JsonResponse($cities);
     }
+
+    /**
+     * @Route("/avg-temp", name="api_average_temp", methods={"GET"})
+     */
+    public function avgTempCityAction(Request $request){
+        $manager = $this->getDoctrine()->getManager();
+
+        $startDate = $request->query->get('start_date');
+        if(!is_null($startDate)){
+            $startDate = new \DateTime($startDate);
+            $startDate->setTime(0,0,0);
+        }
+
+        $endDate = $request->query->get('end_date');
+        if(!is_null($endDate)){
+            $endDate = new \DateTime($endDate);
+            $endDate->setTime(0,0,0);
+        }
+
+        $avgByCityResult = $manager->getRepository(WeatherRecordDaily::class)->getAverageTempByCity(
+            $startDate,
+            $endDate
+        );
+
+        return new JsonResponse($avgByCityResult);
+    }
 }
