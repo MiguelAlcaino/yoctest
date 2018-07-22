@@ -18,14 +18,33 @@ class WeatherApiService
     CONST API_URL = 'https://yoc-media.github.io/weather/report';
     CONST ALLOWED_COUNTRY_CITIES = [
         'DE' => [
-            'Berlin',
-            'Dusseldorf'
+            'name' => 'Germany',
+            'cities' => [
+                'Berlin',
+                'Dusseldorf'
+            ]
         ],
-        'ES' => ['Madrid'],
-        'AT' => ['Vienna'],
-        'PL' => ['Warsaw'],
-        'NL' => ['Amsterdam'],
-        'UK' => ['London']
+        'ES' => [
+            'name' => 'Spain',
+            'cities' => ['Madrid']
+        ],
+        'AT' => [
+            'name' => 'Austria',
+            'cities' => ['Vienna']
+        ],
+        'PL' => [
+            'name' => 'Poland',
+            'cities' => ['Warsaw']
+        ],
+        'NL' => [
+            'name' => 'Netherlands',
+            'cities' => ['Amsterdam']
+        ],
+        'GB' => [
+            'name' => 'United Kingdom',
+            'api_country_code' => 'UK',
+            'cities' => ['London']
+        ]
     ];
 
     /**
@@ -37,11 +56,15 @@ class WeatherApiService
      */
     public function getCityWeatherReport(?string $countryCode = null, ?string $cityName = null){
         $result = $this->getValidCountryAndCity($countryCode, $cityName);
-
         $arrayResult = [];
-        foreach($result['data'] as $countryCode => $cities){
-            foreach($cities as $city){
-                $arrayResult[] = $this->callRequestWeather($countryCode, $city);
+        foreach($result['data'] as $countryCode => $country){
+            foreach($country['cities'] as $city){
+                if(array_key_exists('api_country_code', $country)){
+                    $arrayResult[] = $this->callRequestWeather($country['api_country_code'], $city);
+                }else{
+                    $arrayResult[] = $this->callRequestWeather($countryCode, $city);
+                }
+
             }
         }
 
@@ -69,13 +92,16 @@ class WeatherApiService
         /* Case when cityName is not null. It will check the cityName inside ALLOWED_COUNTRY_CITIES as return if there
           is a match. If there is not a match a CityNotFoundException will be thrown */
         else if(!is_null($cityName)){
-            foreach(self::ALLOWED_COUNTRY_CITIES as $countryCodeAux =>  $countryCities){
-                foreach($countryCities as $countryCity){
+            foreach(self::ALLOWED_COUNTRY_CITIES as $countryCodeAux => $country){
+                foreach($country['cities'] as $countryCity){
                     if($cityName === $countryCity){
                         return [
                             'type' => 'city',
                             'data' => [
-                                $countryCodeAux => [$cityName]
+                                $countryCodeAux => [
+                                    'name' => self::ALLOWED_COUNTRY_CITIES[$countryCodeAux]['name'],
+                                    'cities' => [$cityName]
+                                ]
                             ]
                         ];
                     }
@@ -87,18 +113,13 @@ class WeatherApiService
             return [
                 'type' => 'country',
                 'data' => [
-                    $countryCode => self::ALLOWED_COUNTRY_CITIES[$countryCode]
+                    $countryCode => [
+                        'name' => self::ALLOWED_COUNTRY_CITIES[$countryCode]['name'],
+                        'cities' => self::ALLOWED_COUNTRY_CITIES[$countryCode]['cities']
+                    ]
                 ]
             ];
         }
-//        else if(array_key_exists($countryCode, self::ALLOWED_COUNTRY_CITIES) && in_array($cityName, self::ALLOWED_COUNTRY_CITIES[$countryCode])){
-//            return [
-//                'type' => 'city',
-//                'data' => [
-//                    $countryCode => [$cityName]
-//                ]
-//            ];
-//        }
     }
 
     private function callRequestWeather(string $countryCode, string $cityName){

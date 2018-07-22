@@ -20,6 +20,7 @@ class WeatherRecordDailyRepository extends ServiceEntityRepository
     }
 
     /**
+     * Returns a list of weather records filtered by optional parameters
      * @param \DateTimeInterface|null $startDate
      * @param \DateTimeInterface|null $endDate
      * @param float|null $maxTemp
@@ -39,10 +40,12 @@ class WeatherRecordDailyRepository extends ServiceEntityRepository
     ){
         $rawSql = "SELECT
                       w.datetime,
-                      c.country_code,
-                      c.name,
+                      country.country_code,
+                      country.name as country_name,
+                      c.name as city_name,
                       w.temp
                    FROM city c
+                   LEFT JOIN country country ON country.id = c.country_id
                    LEFT JOIN weather_record_daily w ON w.city_id = c.id ";
 
         if(!is_null($startDate) && !is_null($endDate)){
@@ -87,6 +90,7 @@ class WeatherRecordDailyRepository extends ServiceEntityRepository
     }
 
     /**
+     * Returns a list of cities with their average temperatures
      * @param \DateTimeInterface|null $startDate
      * @param \DateTimeInterface|null $endDate
      * @param int|null $limit
@@ -101,11 +105,13 @@ class WeatherRecordDailyRepository extends ServiceEntityRepository
         ?int $offset = 0
     ){
         $rawSql = "SELECT
-                      c.country_code,
-                      c.name,
+                      country.country_code,
+                      country.name as country_name,
+                      c.name as city_name,
                       ROUND(AVG(w.temp),2) as avg_temp
                     FROM city c
-                      LEFT JOIN weather_record_daily w ON w.city_id = c.id ";
+                    LEFT JOIN country country ON country.id = c.country_id
+                    LEFT JOIN weather_record_daily w ON w.city_id = c.id ";
 
         if(!is_null($startDate) && !is_null($endDate)){
             $rawSql .= " WHERE w.datetime >= :start_date AND w.datetime <= :end_date ";

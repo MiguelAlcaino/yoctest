@@ -31,15 +31,26 @@ There is a command line tool created to satisfy the task 2.
     
 Own Weather API
 ---------------
+ - Run the api server executing `bin/console server:run`. The host will probably be `http://localhost:8000`.
 
- - Task 3.1: Request `GET /` to see Hello World!
- - Task 3.2: Request `GET /weather` to get daily weather records. Example request: `GET /weather?end_date=2018-07-22&start_date=2018-06-01&max_temp=22.3&min_temp=17.6`
+ - **Task 3.1**: Request `GET /` to see Hello World!
+ - **Task 3.2**: Request `GET /weather` to get daily weather records. Example request: `GET /weather?end_date=2018-07-22&start_date=2018-06-01&max_temp=22.3&min_temp=17.6`
     - Optional Parameters:
       - `(string) start_date`: Day when you want the records start from.
       - `(string) end_date`: Day when you want the records to end.
       - `(float) max_temp`: Max temp for records.
       - `(float) min_temp`:  Min temp for records.
- - Task 3.3: Request `GET /avg-temp` to get the average temperature of the cities inside the system. Example request: `GET /avg-temp?end_date=2018-07-22&start_date=2018-06-01`
+ - **Task 3.3**: Request `GET /avg-temp` to get the average temperature of the cities inside the system. Example request: `GET /avg-temp?end_date=2018-07-22&start_date=2018-06-01`
     - Optional Parameters
        - `(string) start_date`: Day when you want the records start from.
        - `(string) end_date`: Day when you want the records to end.
+ - **Task 3.4**: Request `GET /countries` to get a list of the countries inside the system. Example request `GET /countries`
+ - **Task 3.5**: Request `GET /cities` to get a list of the cities inside the system. Example request: `GET /cities?country_code=DE`
+    - Optional Parameters
+        - `(string) country_code`: Code of the country to filter the cities displayed
+
+Assumptions and workarounds made
+----------------
+ - As the command line tool says that it parameters are optionals, a constant `ALLOWED_COUNTRY_CITIES` defined in `src/Services/WeatherApiService.php` has been created in order to get all the cities' weather reports when no parameter is passed to the tool.
+ - The country code for UK inside the api result is "GB". That's why inside The weather service there is a special attribute for it.
+ - The country name is no coming inside the result of the api endpoints. So they are obtain from the constant `ALLOWED_COUNTRY_CITIES` defined in `src/Services/WeatherApiService.php` 

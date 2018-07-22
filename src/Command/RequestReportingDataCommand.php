@@ -10,12 +10,12 @@ namespace App\Command;
 
 
 use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\WeatherRecordDaily;
 use App\Exceptions\CityNotFoundException;
 use App\Exceptions\CountryNotFoundException;
 use App\Services\WeatherApiService;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -80,9 +80,22 @@ class RequestReportingDataCommand extends Command
                     $cityCheck = true;
 
                     if(is_null($city)){
+
+                        $country = $manager->getRepository(Country::class)->findOneBy([
+                            'countryCode' => $dailyRecord->country_code
+                        ]);
+
+                        if(is_null($country)){
+                            $country = (new Country())
+                                ->setCountryCode($dailyRecord->country_code)
+                                ->setName(WeatherApiService::ALLOWED_COUNTRY_CITIES[$dailyRecord->country_code]['name']);
+                            $manager->persist($country);
+                            $manager->flush();
+                        }
+
                         $city = (new City())
                             ->setName($dailyRecord->city_name)
-                            ->setCountryCode($dailyRecord->country_code)
+                            ->setCountry($country)
                             ->setTimezone($dailyRecord->timezone);
                         $manager->persist($city);
                         $manager->flush();

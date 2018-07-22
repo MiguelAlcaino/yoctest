@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\WeatherRecordDaily;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -77,5 +78,29 @@ class ApiController extends Controller
         );
 
         return new JsonResponse($avgByCityResult);
+    }
+
+    /**
+     * @Route("/countries", name="api_country_list", methods={"GET"})
+     */
+    public function getListOfCountries(){
+        $manager = $this->getDoctrine()->getManager();
+        $countries = $manager->getRepository(Country::class)->getAllCountries();
+
+        return new JsonResponse($countries);
+    }
+
+    /**
+     * @Route("/cities", name="api_cities_list", methods={"GET"})
+     */
+    public function getAllCities(Request $request){
+        $manager = $this->getDoctrine()->getManager();
+        $countryCode = $request->query->get('country_code');
+
+        $cities = $manager->getRepository(City::class)->getCities(
+            $countryCode
+        );
+
+        return new JsonResponse($cities);
     }
 }

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CityRepository")
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(columns={"country_code", "name"})})
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(columns={"country_id", "name"})})
  */
 class City
 {
@@ -30,14 +30,15 @@ class City
     private $timezone;
 
     /**
-     * @ORM\Column(type="string", length=4)
-     */
-    private $countryCode;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\WeatherRecordDaily", mappedBy="city")
      */
     private $weatherRecordDailies;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Country", inversedBy="cities")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $country;
 
     public function __construct()
     {
@@ -73,18 +74,6 @@ class City
         return $this;
     }
 
-    public function getCountryCode(): ?string
-    {
-        return $this->countryCode;
-    }
-
-    public function setCountryCode(string $countryCode): self
-    {
-        $this->countryCode = $countryCode;
-
-        return $this;
-    }
-
     /**
      * @return Collection|WeatherRecordDaily[]
      */
@@ -112,6 +101,18 @@ class City
                 $weatherRecordDaily->setCity(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): self
+    {
+        $this->country = $country;
 
         return $this;
     }
