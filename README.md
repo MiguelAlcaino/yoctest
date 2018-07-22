@@ -32,7 +32,7 @@ There is a command line tool created to satisfy the task 2.
 Own Weather API
 ---------------
  - Run the api server executing `bin/console server:run`. The host will probably be `http://localhost:8000`.
-
+ - All the endpoints count with a optional parameter `(int) page` if it's not present its default value is `1`
  - **Task 3.1**: Request `GET /` to see Hello World!
  - **Task 3.2**: Request `GET /weather` to get daily weather records. Example request: `GET /weather?end_date=2018-07-22&start_date=2018-06-01&max_temp=22.3&min_temp=17.6`
     - Optional Parameters:

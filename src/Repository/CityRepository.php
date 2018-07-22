@@ -44,4 +44,25 @@ class CityRepository extends ServiceEntityRepository
 
         return $query->getArrayResult();
     }
+
+    /**
+     * @param null|string $countryCode
+     * @return int
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countCities(?string $countryCode = null){
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(c.id)')
+            ->from(City::class,'c')
+            ->leftJoin('c.country','country');
+
+        if(!is_null($countryCode)){
+            $qb->where('country.countryCode = :country_code')
+                ->setParameter('country_code', $countryCode);
+        }
+
+        $query = $qb->getQuery();
+
+        return $query->getSingleScalarResult();
+    }
 }

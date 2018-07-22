@@ -36,4 +36,18 @@ class CountryRepository extends ServiceEntityRepository
 
         return $query->getArrayResult();
     }
+
+    /**
+     * @return int
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countCountries(){
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('COUNT(c.id)')
+            ->from(Country::class,'c')
+            ->orderBy('c.name')
+            ->getQuery();
+
+        return $query->getSingleScalarResult();
+    }
 }
