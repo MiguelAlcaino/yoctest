@@ -63,6 +63,10 @@ Own Weather API
  - **Task 3.5**: Request `GET /cities` to get a list of the cities inside the system. Example request: `GET /cities?country_code=DE`
     - Optional Parameters
         - `(string) country_code`: Code of the country to filter the cities displayed
+ - BONUS Best weekend task: Request `GET /best-weekend` to get the best weekend temp by city. Example request `/best-weekend?end_date=2018-07-01`.
+ - Optional Parameters
+        - `(string) start_date`: Day when you want the records start from.
+        - `(string) end_date`: Day when you want the records to end.
 
 Assumptions and workarounds made
 ----------------

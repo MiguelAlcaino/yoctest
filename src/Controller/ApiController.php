@@ -200,4 +200,36 @@ class ApiController extends Controller
             $responseArray['pagination']['previous'] = $this->generateUrl($request->get('_route'), $routeParams, UrlGeneratorInterface::ABSOLUTE_URL);
         }
     }
+
+    /**
+     * @param Request $request
+     * @Route("/best-weekend", name="api_best_weekend", methods={"GET"})
+     */
+    public function bestWeekendAction(Request $request){
+        $manager = $this->getDoctrine()->getManager();
+        $page = $request->query->get('page',1);
+        $offset = ($page - 1)*self::MAX_RESULTS_PER_PAGE;
+        $startDate = $request->query->get('start_date');
+        if(!is_null($startDate)){
+            $startDate = new \DateTime($startDate);
+            $startDate->setTime(0,0,0);
+        }
+
+        $endDate = $request->query->get('end_date');
+        if(!is_null($endDate)){
+            $endDate = new \DateTime($endDate);
+            $endDate->setTime(0,0,0);
+        }
+
+        $weatherRecords = $manager->getRepository(WeatherRecordDaily::class)->getMaxTempWeekendByCity(
+            $startDate,
+            $endDate
+        );
+
+        $responseArray = [
+            'data' => $weatherRecords
+        ];
+
+        return new JsonResponse($responseArray);
+    }
 }

@@ -3,6 +3,21 @@
 ###############################################################################
 version: "3.1"
 services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: yoctest-mysql
+      working_dir: /application
+      volumes:
+        - .:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=yoctest
+        - MYSQL_USER=yoctest
+        - MYSQL_PASSWORD=yoctest
+      ports:
+        - "8082:3306"
+
     webserver:
       image: nginx:alpine
       container_name: yoctest-webserver

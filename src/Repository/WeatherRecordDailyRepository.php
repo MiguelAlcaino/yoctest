@@ -229,4 +229,39 @@ class WeatherRecordDailyRepository extends ServiceEntityRepository
 
         return $rawSql;
     }
+
+    /**
+     * Returns an array fo coties and their max weekend temperature
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function getMaxTempWeekendByCity(
+        ?\DateTimeInterface $startDate = null,
+        ?\DateTimeInterface $endDate = null
+    ){
+        $rawSql = "SELECT c.name as city_name, c2.name as country_name, w.temp, w.datetime FROM weather_record_daily w
+                    RIGHT JOIN (
+                    SELECT w2.city_id, MAX(w2.temp) max_temp
+                    FROM weather_record_daily w2
+                    WHERE DAYOFWEEK(w2.datetime) = 1 OR DAYOFWEEK(w2.datetime) = 7
+                    GROUP BY w2.city_id) wtemp ON wtemp.max_temp = w.temp
+                      LEFT JOIN city c on w.city_id = c.id
+                      LEFT JOIN country c2 on c.country_id = c2.id
+                     ";
+        $params = [];
+        $this->addStartAndEndDateConditionsToRawQuery($startDate, $endDate, $rawSql,$params);
+
+        $rawSql .= " AND DAYOFWEEK(w.datetime) = 1 OR DAYOFWEEK(w.datetime) = 7
+                       GROUP BY w.id";
+
+        $stmt = $this->getEntityManager()->getConnection()->prepare($rawSql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+//select w.id, c2.id, c2.name, c.id, c.name, max(w.temp) from weather_record_daily w
+//LEFT JOIN city c on w.city_id = c.id
+//LEFT JOIN country c2 on c.country_id = c2.id
+//where DAYOFWEEK(w.datetime) = 7 OR DAYOFWEEK(w.datetime) = 6
+//GROUP BY w.city_id
 }
