@@ -7,14 +7,29 @@ Requirements
  - php-sqlite module activated
  - Composer
  - Linux. (It should work on OSX as well, but it has been tested only in linux)
- 
-Installation
+ - Docker (optional)
+
+Installation (no Docker)
 ------------
  - Clone the project
  - Open a terminal and go inside the project folder
  - Run `composer install`
  - Run `bin/console doctrine:database:create`
  - Run `bin/console doctrine:schema:update --force`
+ 
+Run it with Docker! (optional)
+-------------------
+The app has been dockerized so it can run its own environment exposing a web nginx server using the port `8080`.
+  - Requirements
+    - Docker compose
+  - Installation
+    - Run `docker-compose up` and keep the terminal window open. You can add the option `-d` to run it in the background.
+    - Run `docker-compose exec php-fpm composer install`
+    - Run `docker-compose exec php-fpm bin/console doctrine:database:create`
+    - Run `docker-compose exec php-fpm bin/console doctrine:schema:update --force`
+    - Request new weather data running `docker-compose exec php-fpm bin/console yoc:weather:request`
+    - With your browser access to `http://localhost:8080`
+  - If you installed this project using Docker (this section) all symfony commands in the instructions below should be used prepending `docker-compose exec php-fpm`   
  
 Using the project
 -----------------
@@ -48,15 +63,6 @@ Own Weather API
  - **Task 3.5**: Request `GET /cities` to get a list of the cities inside the system. Example request: `GET /cities?country_code=DE`
     - Optional Parameters
         - `(string) country_code`: Code of the country to filter the cities displayed
-
-Run it with Docker
-------
-The app has been dockerized so it can run its own environment exposin a web nginx server using the port `8080`.
- -Requirements
-   - Docker compose
- - Installation
-   - Run `docker-compose up` and keep the terminal window open. You can add the option `-d` to run it in the background.
-   - With your browser access to `http://localhost:8080`
 
 Assumptions and workarounds made
 ----------------
