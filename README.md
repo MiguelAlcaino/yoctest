@@ -49,6 +49,15 @@ Own Weather API
     - Optional Parameters
         - `(string) country_code`: Code of the country to filter the cities displayed
 
+Run it with Docker
+------
+The app has been dockerized so it can run its own environment exposin a web nginx server using the port `8080`.
+ -Requirements
+   - Docker compose
+ - Installation
+   - Run `docker-compose up` and keep the terminal window open. You can add the option `-d` to run it in the background.
+   - With your browser access to `http://localhost:8080`
+
 Assumptions and workarounds made
 ----------------
  - As the command line tool says that it parameters are optionals, a constant `ALLOWED_COUNTRY_CITIES` defined in `src/Services/WeatherApiService.php` has been created in order to get all the cities' weather reports when no parameter is passed to the tool.
